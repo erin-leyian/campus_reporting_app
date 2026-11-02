@@ -10,6 +10,13 @@ class Validators {
     return null;
   }
 
+  static String? description(String? value) {
+    if (value == null || value.trim().length < 20) {
+      return 'Describe the problem (at least 20 characters)';
+    }
+    return null;
+  }
+
   static String? password(String? value) {
     if (value == null || value.isEmpty) return 'Password is required';
     if (value.length < 8) return 'At least 8 characters';
