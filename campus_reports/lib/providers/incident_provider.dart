@@ -25,6 +25,16 @@ class IncidentProvider extends ChangeNotifier {
   String? get statusFilter => _status;
   bool get mineOnly => _mineOnly;
 
+  bool get hasFilters =>
+      _search.isNotEmpty || _category != null || _status != null || _mineOnly;
+
+  Incident? byId(String id) {
+    for (final i in _all) {
+      if (i.id == id) return i;
+    }
+    return null;
+  }
+
   /// The list screens show: all reports after search and filters.
   List<Incident> get incidents {
     return _all.where((i) {
@@ -61,6 +71,10 @@ class IncidentProvider extends ChangeNotifier {
   void stop() {
     _sub?.cancel();
     _all = [];
+    _search = '';
+    _category = null;
+    _status = null;
+    _mineOnly = false;
   }
 
   void setSearch(String v) {

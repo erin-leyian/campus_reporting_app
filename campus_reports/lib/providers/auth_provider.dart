@@ -11,8 +11,9 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
 
   AuthProvider() {
-    _service.authStateChanges.listen((user) {
+    _service.authStateChanges.listen((user) async {
       _user = user;
+      _role = user == null ? 'student' : await _service.fetchRole(user.uid);
       notifyListeners();
     });
   }
@@ -21,7 +22,10 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _loading;
   String? get error => _error;
   bool get isLoggedIn => _user != null;
-  bool get isVerified => _user?.emailVerified ?? false;
+  bool get isVerified => (_user?.emailVerified ?? false) || isStaff;
+  String _role = 'student';
+  String get role => _role;
+  bool get isStaff => _role == 'staff';
 
   Future<bool> register(String name, String email, String password) => _run(
     () => _service.register(name: name, email: email, password: password),
@@ -38,6 +42,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> checkVerified() async {
     await _service.refreshVerified();
     _user = _service.currentUser;
+    if (_user != null) _role = await _service.fetchRole(_user!.uid);
     notifyListeners();
   }
 

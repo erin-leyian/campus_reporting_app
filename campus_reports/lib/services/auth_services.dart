@@ -34,6 +34,15 @@ class AuthService {
     );
   }
 
+  Future<String> fetchRole(String uid) async {
+    try {
+      final doc = await _db.collection('users').doc(uid).get();
+      return (doc.data()?['role'] as String?) ?? 'student';
+    } catch (_) {
+      return 'student';
+    }
+  }
+
   Future<void> logout() => _auth.signOut();
 
   Future<void> resendVerification() async {
@@ -42,6 +51,7 @@ class AuthService {
 
   Future<bool> refreshVerified() async {
     await _auth.currentUser?.reload();
+    await _auth.currentUser?.getIdToken(true);
     return _auth.currentUser?.emailVerified ?? false;
   }
 }
