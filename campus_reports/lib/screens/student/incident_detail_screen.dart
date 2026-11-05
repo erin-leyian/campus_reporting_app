@@ -111,6 +111,26 @@ class IncidentDetailScreen extends StatelessWidget {
           Text('Description', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(i.description),
+          if (i.photoUrl != null) ...[
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                i.photoUrl!,
+                fit: BoxFit.cover,
+                loadingBuilder: (c, child, progress) => progress == null
+                    ? child
+                    : const SizedBox(
+                        height: 180,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                errorBuilder: (c, e, s) => const SizedBox(
+                  height: 80,
+                  child: Center(child: Text('Could not load photo')),
+                ),
+              ),
+            ),
+          ],
           if (isStaff) ...[
             const Divider(height: 32),
             Text(

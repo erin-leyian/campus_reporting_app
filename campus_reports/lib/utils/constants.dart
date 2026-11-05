@@ -27,3 +27,8 @@ class AppConstants {
     'Other',
   ];
 }
+
+class CloudinaryConfig {
+  static const cloudName = 'dkljfj7i';
+  static const uploadPreset = 'campus_unsigned';
+}

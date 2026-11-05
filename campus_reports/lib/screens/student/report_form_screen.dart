@@ -6,6 +6,12 @@ import '../../providers/incident_provider.dart';
 import '../../utils/constants.dart';
 import '../../utils/validators.dart';
 
+import 'dart:typed_data';
+
+import 'package:image_picker/image_picker.dart';
+
+import '../../services/storage_service.dart';
+
 class ReportFormScreen extends StatefulWidget {
   const ReportFormScreen({super.key});
 
@@ -19,6 +25,8 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
   final _description = TextEditingController();
   String? _category;
   String? _location;
+  Uint8List? _photoBytes;
+  String? _photoName;
   bool _anonymous = false;
 
   @override
@@ -26,6 +34,27 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
     _title.dispose();
     _description.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 1280,
+      imageQuality: 80,
+    );
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    if (!mounted) return;
+    if (bytes.length > StorageService.maxBytes) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Photo is too large (max 5 MB)')),
+      );
+      return;
+    }
+    setState(() {
+      _photoBytes = bytes;
+      _photoName = picked.name;
+    });
   }
 
   Future<void> _submit() async {
@@ -41,6 +70,8 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
       reporterId: user.uid,
       reporterName: user.displayName ?? 'Student',
       isAnonymous: _anonymous,
+      photoBytes: _photoBytes,
+      photoName: _photoName,
     );
 
     if (!mounted) return;
@@ -110,6 +141,44 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                 ),
                 validator: Validators.description,
               ),
+              if (_photoBytes != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(
+                    _photoBytes!,
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () => setState(() {
+                    _photoBytes = null;
+                    _photoName = null;
+                  }),
+                  icon: const Icon(Icons.close),
+                  label: const Text('Remove photo'),
+                ),
+              ] else
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _pickImage(ImageSource.gallery),
+                        icon: const Icon(Icons.photo_library_outlined),
+                        label: const Text('Gallery'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _pickImage(ImageSource.camera),
+                        icon: const Icon(Icons.photo_camera_outlined),
+                        label: const Text('Camera'),
+                      ),
+                    ),
+                  ],
+                ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Report anonymously'),

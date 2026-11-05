@@ -5,8 +5,13 @@ import 'package:flutter/material.dart';
 import '../models/incident.dart';
 import '../services/incident_service.dart';
 
+import 'dart:typed_data';
+
+import '../services/storage_service.dart';
+
 class IncidentProvider extends ChangeNotifier {
   final IncidentService _service = IncidentService();
+  final StorageService _storage = StorageService();
   StreamSubscription<List<Incident>>? _sub;
 
   List<Incident> _all = [];
@@ -127,11 +132,26 @@ class IncidentProvider extends ChangeNotifier {
     required String reporterId,
     required String reporterName,
     bool isAnonymous = false,
+    Uint8List? photoBytes,
+    String? photoName,
   }) async {
     _submitting = true;
     _error = null;
     notifyListeners();
     try {
+      String? photoUrl;
+      if (photoBytes != null) {
+        try {
+          photoUrl = await _storage.uploadImage(
+            photoBytes,
+            photoName ?? 'photo.jpg',
+          );
+        } catch (e) {
+          debugPrint('UPLOAD ERROR: $e');
+          _error = 'Photo upload failed: $e';
+          return false;
+        }
+      }
       await _service.create(
         Incident(
           id: '',
@@ -143,6 +163,7 @@ class IncidentProvider extends ChangeNotifier {
           reporterId: reporterId,
           reporterName: reporterName,
           isAnonymous: isAnonymous,
+          photoUrl: photoUrl,
         ),
       );
       return true;
