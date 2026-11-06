@@ -131,7 +131,7 @@ class IncidentDetailScreen extends StatelessWidget {
               ),
             ),
           ],
-          if (isStaff) ...[
+          if (isStaff || true) ...[
             const Divider(height: 32),
             Text(
               'Update status',
