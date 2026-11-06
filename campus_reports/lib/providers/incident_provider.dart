@@ -120,6 +120,8 @@ class IncidentProvider extends ChangeNotifier {
 
   Future<void> deleteIncident(String id) => _service.delete(id);
 
+  Future<void> updateDescription(String id, String description) =>
+      _service.updateDescription(id, description);
   @override
   void dispose() {
     _sub?.cancel();

@@ -6,6 +6,8 @@ import '../../providers/incident_provider.dart';
 import '../../widgets/status_chip.dart';
 import '../../utils/constants.dart';
 import '../../widgets/status_stepper.dart';
+import '../../models/incident.dart';
+import '../../utils/validators.dart';
 
 class IncidentDetailScreen extends StatelessWidget {
   final String incidentId;
@@ -52,6 +54,47 @@ class IncidentDetailScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _editDescription(BuildContext context, Incident i) async {
+    final controller = TextEditingController(text: i.description);
+    final provider = context.read<IncidentProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    final newText = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit description'),
+        content: TextField(controller: controller, maxLines: 5, maxLength: 500),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (newText == null || newText == i.description) return;
+    final error = Validators.description(newText);
+    if (error != null) {
+      messenger.showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    try {
+      await provider.updateDescription(i.id, newText);
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Description updated')),
+      );
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Could not update the description')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final i = context.watch<IncidentProvider>().byId(incidentId);
@@ -68,6 +111,7 @@ class IncidentDetailScreen extends StatelessWidget {
 
     final isOwner = i.reporterId == uid;
     final canDelete = isOwner && i.status == 'Submitted';
+    final canEdit = isOwner && i.status == 'Submitted';
     final reporter = i.isAnonymous
         ? (isOwner ? 'You (anonymous)' : 'Anonymous')
         : i.reporterName;
@@ -79,6 +123,11 @@ class IncidentDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Report details'),
         actions: [
+          if (canEdit)
+            IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => _editDescription(context, i),
+            ),
           if (canDelete)
             IconButton(
               icon: const Icon(Icons.delete_outline),
