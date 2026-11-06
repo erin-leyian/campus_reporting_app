@@ -122,6 +122,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           : 'New here? Create an account',
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Staff accounts are issued by campus administration.',
+                    style: Theme.of(context).textTheme.bodySmall,
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),

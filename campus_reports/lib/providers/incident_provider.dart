@@ -42,7 +42,7 @@ class IncidentProvider extends ChangeNotifier {
 
   /// The list screens show: all reports after search and filters.
   List<Incident> get incidents {
-    return _all.where((i) {
+    final filtered = _all.where((i) {
       if (_mineOnly && i.reporterId != _uid) return false;
       if (_category != null && i.category != _category) return false;
       if (_status != null && i.status != _status) return false;
@@ -52,6 +52,11 @@ class IncidentProvider extends ChangeNotifier {
       }
       return true;
     }).toList();
+    // Urgent (Safety) reports first; newest-first order kept inside each group.
+    return [
+      ...filtered.where((i) => i.isUrgent),
+      ...filtered.where((i) => !i.isUrgent),
+    ];
   }
 
   void listen(String uid) {

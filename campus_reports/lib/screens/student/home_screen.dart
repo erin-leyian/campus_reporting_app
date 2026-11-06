@@ -37,10 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final p = context.watch<IncidentProvider>();
     final list = p.incidents;
+    final isStaff = context.watch<AuthProvider>().isStaff;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Campus Reports'),
+        title: Text(isStaff ? 'Staff · Campus Reports' : 'Campus Reports'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

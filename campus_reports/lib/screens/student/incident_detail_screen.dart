@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/incident_provider.dart';
 import '../../widgets/status_chip.dart';
 import '../../utils/constants.dart';
+import '../../widgets/status_stepper.dart';
 
 class IncidentDetailScreen extends StatelessWidget {
   final String incidentId;
@@ -103,6 +104,8 @@ class IncidentDetailScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Text(i.title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 16),
+          StatusStepper(i.status),
+          const SizedBox(height: 16),
           _InfoRow(Icons.category_outlined, 'Category', i.category),
           _InfoRow(Icons.place_outlined, 'Location', i.location),
           _InfoRow(Icons.person_outline, 'Reported by', reporter),
@@ -131,7 +134,7 @@ class IncidentDetailScreen extends StatelessWidget {
               ),
             ),
           ],
-          if (isStaff || true) ...[
+          if (isStaff) ...[
             const Divider(height: 32),
             Text(
               'Update status',
