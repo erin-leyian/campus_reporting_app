@@ -152,16 +152,16 @@ Testing was performed manually across critical app workflows using an Android em
 
 | Test Case | Expected Outcome | Status |
 | :--- | :--- | :---: |
-| Register with non-ALU email | Validation error (must be `@alustudent.com`) | ✅ Pass |
-| Register with ALU email | Account created, verification email sent | ✅ Pass |
-| Login before email verification | Screen locked at `VerifyEmailScreen` | ✅ Pass |
-| Short description (< 20 chars) | Form validation blocks submission | ✅ Pass |
-| Report creation with photo | Image uploaded to Cloudinary, incident saved | ✅ Pass |
-| Offline / Network failure | Clean error snackbar, no broken documents | ✅ Pass |
-| Search & multi-filter feed | Real-time query matches on local feed | ✅ Pass |
-| Staff updates report status | Student UI updates immediately without refresh | ✅ Pass |
-| Student attempts staff action | Blocked server-side by Firestore rules | ✅ Pass |
-| Delete/edit non-submitted report | Restricted; editing disabled once status advances | ✅ Pass |
+| Register with non-ALU email | Validation error (must be `@alustudent.com`) | Pass |
+| Register with ALU email | Account created, verification email sent |  Pass |
+| Login before email verification | Screen locked at `VerifyEmailScreen` |  Pass |
+| Short description (< 20 chars) | Form validation blocks submission |  Pass |
+| Report creation with photo | Image uploaded to Cloudinary, incident saved | Pass |
+| Offline / Network failure | Clean error snackbar, no broken documents |  Pass |
+| Search & multi-filter feed | Real-time query matches on local feed |  Pass |
+| Staff updates report status | Student UI updates immediately without refresh | Pass |
+| Student attempts staff action | Blocked server-side by Firestore rules |  Pass |
+| Delete/edit non-submitted report | Restricted; editing disabled once status advances | Pass |
 
 ---
 
